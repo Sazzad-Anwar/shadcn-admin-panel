@@ -65,6 +65,8 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   let error = searchParams.get("error")
 
+  uesEffect(() => {}, [session, router])
+
   const onSubmit = (data: FormInput) => {
     setIsLoading(true)
     signIn("credentials", { ...data, callbackUrl: "/" })
