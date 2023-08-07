@@ -22,6 +22,8 @@ export default function Layout({ children }: LayoutProps) {
   const { sideBar } = useGlobalContext()
   const [isMobileWidth] = useMobileWidth()
 
+  console.log(session)
+
   if (
     pathname === "/login" ||
     pathname === "/error" ||
