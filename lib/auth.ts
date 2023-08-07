@@ -74,6 +74,7 @@ export const authOptions: NextAuthOptions = {
         //   console.log(error)
         //   throw new Error(error?.message)
         // }
+        console.log({ account })
       }
       return true
     },
