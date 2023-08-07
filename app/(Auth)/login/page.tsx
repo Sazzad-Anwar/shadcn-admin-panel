@@ -65,7 +65,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   let error = searchParams.get("error")
 
-  uesEffect(() => {}, [session, router])
+  useEffect(() => {}, [session])
 
   const onSubmit = (data: FormInput) => {
     setIsLoading(true)
