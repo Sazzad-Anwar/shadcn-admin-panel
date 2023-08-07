@@ -69,6 +69,7 @@ export const authOptions: NextAuthOptions = {
           user.email = data?.user?.email
           user.id = data?.user?.id
           user.name = data?.user?.username
+          console.log(user)
           cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
         } catch (error) {
           console.log(error)
