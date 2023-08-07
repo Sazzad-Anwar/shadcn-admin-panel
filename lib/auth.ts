@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   cookies: {},
   callbacks: {
-    async signIn({ account, user }) {
+    async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
           let res = await fetch(
@@ -87,9 +87,9 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token, user }) {
+      console.log(token)
       session.user.id = +token?.sub!
       session.user.token = token.accessToken as string
-      console.log(session)
       return session
     },
   },
