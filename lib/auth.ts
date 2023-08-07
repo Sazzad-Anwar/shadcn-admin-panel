@@ -100,7 +100,12 @@ export const authOptions: NextAuthOptions = {
           session.user.email = data?.user?.email
           session.user.id = data?.user?.id
           session.user.name = data?.user?.username
-          cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
+          cookies().set("token", data?.jwt, {
+            maxAge: 60 * 60 * 24 * 30,
+            sameSite: "lax",
+            path: "/",
+            httpOnly: true,
+          })
           return session
         } catch (error: any) {
           console.log(error)
