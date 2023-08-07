@@ -22,7 +22,12 @@ export default function Layout({ children }: LayoutProps) {
   const { sideBar } = useGlobalContext()
   const [isMobileWidth] = useMobileWidth()
 
-  if (pathname === "/login" || pathname === "/error") {
+  if (
+    pathname === "/login" ||
+    pathname === "/error" ||
+    pathname === "/provider" ||
+    pathname.includes("/connect")
+  ) {
     return (
       <div className="relative flex min-h-screen flex-1 flex-col">
         {children}
@@ -50,9 +55,9 @@ export default function Layout({ children }: LayoutProps) {
               sideBar.isOpen && !isMobileWidth
                 ? " ml-auto md:w-[calc(100%-250px)] lg:w-[calc(100%-300px)]"
                 : sideBar.isOpen && isMobileWidth
-                ? "hidden"
+                ? "w-0"
                 : "w-full"
-            }`}
+            } ml-auto transition-all duration-150 ease-in-out`}
           >
             <SiteHeader />
             <main className="m-5 md:mx-10">

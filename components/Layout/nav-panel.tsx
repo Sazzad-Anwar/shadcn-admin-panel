@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { useGlobalContext } from "@/context/GlobalContextProvider"
 import { SIDE_BAR_TOGGLE } from "@/context/constants/SideBar.contatns"
 import { Menu, X } from "lucide-react"
+import { useSession } from "next-auth/react"
 import { v4 as uuId } from "uuid"
 
 import { NavigationType } from "@/types/app"
@@ -25,6 +26,7 @@ export default function NavPanel({ name }: { name: string }) {
   const { sideBar, sideBarDispatch } = useGlobalContext()
   const pathname = usePathname()
   const [isMobileWidth] = useMobileWidth()
+  const session = useSession()
 
   if (sideBar.isOpen) {
     return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { QueryProps } from "@/apiRequests/posts/filter"
+import { QueryProps } from "@/filters/posts/filter"
 import { Table } from "@tanstack/react-table"
 import {
   ChevronLeft,

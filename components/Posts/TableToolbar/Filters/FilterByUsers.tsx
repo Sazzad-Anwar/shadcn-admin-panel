@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { QueryProps } from "@/apiRequests/posts/filter"
+import { QueryProps } from "@/filters/posts/filter"
 import { Check, PlusCircle } from "lucide-react"
 import { useSession } from "next-auth/react"
 import QueryString from "qs"
@@ -34,7 +34,7 @@ export default function FilterByUsers({ users }: FilterByUserProps) {
     searchParams.get("filters") &&
       JSON.parse(searchParams.get("filters")!)?.users.length
       ? JSON.parse(searchParams.get("filters")!)?.users
-      : [session?.data?.user?.id]
+      : []
   )
   let router = useRouter()
   let pathname = usePathname()
@@ -124,35 +124,36 @@ export default function FilterByUsers({ users }: FilterByUserProps) {
             <CommandInput placeholder="Users" />
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {users.map((user) => {
-                let isSelected = selectedValues.includes(user?.id!)
-                return (
-                  <CommandItem
-                    key={user.username}
-                    onSelect={() => {
-                      if (isSelected) {
-                        setSelectedValues(
-                          selectedValues.filter((value) => value !== user.id)
-                        )
-                      } else {
-                        setSelectedValues((prev) => [...prev, user?.id!])
-                      }
-                    }}
-                  >
-                    <div
-                      className={cn(
-                        "mr-3 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-51 [&_svg]:invisible"
-                      )}
+              {users &&
+                users?.map((user) => {
+                  let isSelected = selectedValues.includes(user?.id!)
+                  return (
+                    <CommandItem
+                      key={user.username}
+                      onSelect={() => {
+                        if (isSelected) {
+                          setSelectedValues(
+                            selectedValues.filter((value) => value !== user.id)
+                          )
+                        } else {
+                          setSelectedValues((prev) => [...prev, user?.id!])
+                        }
+                      }}
                     >
-                      <Check className={cn("h-5 w-4")} />
-                    </div>
-                    <span>{user.username}</span>
-                  </CommandItem>
-                )
-              })}
+                      <div
+                        className={cn(
+                          "mr-3 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                          isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "opacity-51 [&_svg]:invisible"
+                        )}
+                      >
+                        <Check className={cn("h-5 w-4")} />
+                      </div>
+                      <span>{user.username}</span>
+                    </CommandItem>
+                  )
+                })}
             </CommandGroup>
           </Command>
         </PopoverContent>

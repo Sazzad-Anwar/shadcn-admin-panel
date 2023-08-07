@@ -1,11 +1,11 @@
 import React from "react"
 import { useRouter } from "next/navigation"
-import { deletePost } from "@/apiRequests/posts/posts.api"
 import { ShowApiError } from "@/utils/showApiError"
 import { ColumnDef } from "@tanstack/react-table"
 import { Pen, SquareGantt, Trash } from "lucide-react"
 
 import { PostType } from "@/types/app"
+import { APIRoutes } from "@/config/routes"
 
 import { DataTableColumnHeader } from "../DataTable/DataTableColumnHeader/page"
 import { DataTableRowActions } from "../DataTable/DataTableRowActions/page"
@@ -16,6 +16,25 @@ import { useToast } from "../ui/use-toast"
 export default function PostTableColumn() {
   const { toast } = useToast()
   const router = useRouter()
+
+  const deletePost = async (id: number) => {
+    let token =
+      typeof window !== "undefined" ? window.localStorage.getItem("token") : ""
+    let res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL + APIRoutes.POST}/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    if (!res.ok) {
+      throw new Error("Failed to fetch data")
+    }
+    return res.json()
+  }
+
   const postTableColumns: ColumnDef<PostType>[] = [
     {
       id: "select",
@@ -54,7 +73,7 @@ export default function PostTableColumn() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center">
-            <Avatar>
+            <Avatar className="h-3.5 w-3.5">
               <AvatarFallback>
                 {row.original.user?.username?.split("")[0]}
               </AvatarFallback>
@@ -107,8 +126,7 @@ export default function PostTableColumn() {
               name: "Delete",
               link: "/posts",
               onClick: async () => {
-                let res = await deletePost(row.original?.id!)
-                let data = await res.json()
+                let data = await deletePost(row.original?.id!)
                 if (data?.error?.message) {
                   ShowApiError(data.error)
                 } else {

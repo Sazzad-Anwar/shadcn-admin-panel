@@ -11,7 +11,7 @@ export const postQuery = ({ page, pageSize, search, filters }: QueryProps) => {
   if (search) {
     return QueryString.stringify(
       {
-        sort: ["createdAt:desc"],
+        sort: ["id:desc"],
         filters: {
           $or: [
             {

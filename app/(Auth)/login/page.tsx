@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react"
 import Image, { StaticImageData } from "next/image"
-import { redirect, useRouter } from "next/navigation"
+import { redirect, useRouter, useSearchParams } from "next/navigation"
 import { loginImages } from "@/assets/images/image"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2, X } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
 import { signIn, useSession } from "next-auth/react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -33,11 +33,20 @@ import { Icons } from "@/components/icons"
 import Loading from "@/app/loading"
 
 const FormSchema = z.object({
-  identifier: z.string().email(),
+  identifier: z
+    .string()
+    .email({
+      message: "Email is not valid",
+    })
+    .nonempty({
+      message: "Email cannot be empty",
+    }),
   password: z
     .string()
     .min(6, { message: "Must be 6 characters long" })
-    .nonempty(),
+    .nonempty({
+      message: "Password cannot be empty",
+    }),
 })
 
 type FormInput = z.infer<typeof FormSchema>
@@ -47,29 +56,19 @@ export default function Login() {
     resolver: zodResolver(FormSchema),
   })
   const {
-    register,
-    watch,
-    setValue,
     handleSubmit,
     formState: { errors },
   } = form
   const session = useSession()
-  const router = useRouter()
-  const [image, setImage] = useState<StaticImageData>(loginImages[0])
+  const searchParams = useSearchParams()
+  const [isShowingPassword, setIsShowingPassword] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  let error = searchParams.get("error")
 
   const onSubmit = (data: FormInput) => {
     setIsLoading(true)
     signIn("credentials", { ...data, callbackUrl: "/" })
   }
-
-  useEffect(() => {
-    let interval = setInterval(() => {
-      setImage(loginImages[Math.floor(Math.random() * loginImages.length)])
-    }, 10000)
-
-    return () => clearInterval(interval)
-  }, [session, router])
 
   if (session.status === "authenticated") {
     redirect("/")
@@ -83,7 +82,7 @@ export default function Login() {
     return (
       <div className="animate__animated animate__fadeIn animate__slower absolute inset-0 z-0 h-full w-full">
         <Image
-          src={image}
+          src={loginImages[3]}
           fill
           className="object-fill md:object-cover"
           alt="login-image"
@@ -116,7 +115,11 @@ export default function Login() {
                     <Icons.gitHub className="mr-2 h-4 w-4" />
                     Github
                   </Button>
-                  <Button type="button" variant="outline">
+                  <Button
+                    onClick={() => signIn("google")}
+                    type="button"
+                    variant="outline"
+                  >
                     <Icons.google className="mr-2 h-4 w-4" />
                     Google
                   </Button>
@@ -137,7 +140,7 @@ export default function Login() {
                     name="identifier"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email/Username</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input
@@ -148,20 +151,6 @@ export default function Login() {
                               value={field.value ?? ""}
                               onChange={field.onChange}
                             />
-                            {watch("identifier") && (
-                              <Button
-                                className="absolute right-0 top-[2px] z-10"
-                                onClick={() =>
-                                  setValue("identifier", "", {
-                                    shouldValidate: true,
-                                  })
-                                }
-                                variant="link"
-                                size="sm"
-                              >
-                                <X size={20} />
-                              </Button>
-                            )}
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -179,7 +168,7 @@ export default function Login() {
                         <FormControl>
                           <div className="relative">
                             <Input
-                              type="password"
+                              type={isShowingPassword ? "text" : "password"}
                               placeholder="******"
                               className={
                                 errors.password && "border-destructive"
@@ -187,26 +176,32 @@ export default function Login() {
                               value={field.value ?? ""}
                               onChange={field.onChange}
                             />
-                            {watch("password") && (
-                              <Button
-                                className="absolute right-0 top-[2px] z-10"
-                                onClick={() =>
-                                  setValue("password", "", {
-                                    shouldValidate: true,
-                                  })
-                                }
-                                variant="link"
-                                size="sm"
-                              >
-                                <X size={20} />
-                              </Button>
-                            )}
+                            <Button
+                              type="button"
+                              className="absolute right-0 top-[2px] z-10"
+                              onClick={() =>
+                                setIsShowingPassword(!isShowingPassword)
+                              }
+                              variant="link"
+                              size="sm"
+                            >
+                              {isShowingPassword ? (
+                                <EyeOff size={20} />
+                              ) : (
+                                <Eye size={20} />
+                              )}
+                            </Button>
                           </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  {error && (
+                    <p className="mt-4 text-center text-sm font-semibold text-red-600">
+                      {error}
+                    </p>
+                  )}
                 </div>
               </CardContent>
               <CardFooter>

@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react"
 import { useRouter } from "next/navigation"
-import { createPostApi } from "@/apiRequests/posts/posts.api"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { X } from "lucide-react"
 import { useSession } from "next-auth/react"
@@ -8,6 +7,7 @@ import { useForm } from "react-hook-form"
 
 import { CreatePostType, UserType } from "@/types/app"
 import { CreatePostSchema } from "@/types/zod.type"
+import { APIRoutes } from "@/config/routes"
 import { cn } from "@/lib/utils"
 
 import { Button } from "../ui/button"
@@ -49,13 +49,26 @@ export default function PostForm({ users, setOpen }: PostFormProp) {
   const router = useRouter()
 
   const onSubmit = handleSubmit(async (data) => {
+    let token =
+      typeof window !== "undefined" ? window.localStorage.getItem("token") : ""
     try {
-      let res = await createPostApi(data)
+      let res = await fetch(
+        process.env.NEXT_PUBLIC_BASE_API_URL + APIRoutes.POST,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      )
+      let resData = await res.json()
 
-      if (res?.error?.status) {
+      if (resData?.error?.status) {
         toast({
           variant: "destructive",
-          title: res?.error?.message,
+          title: resData?.error?.message,
         })
       } else {
         toast({
@@ -163,14 +176,15 @@ export default function PostForm({ users, setOpen }: PostFormProp) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {users.map((userList) => (
-                    <SelectItem
-                      key={userList?.email}
-                      value={userList?.id!.toString()}
-                    >
-                      {userList?.username}
-                    </SelectItem>
-                  ))}
+                  {users &&
+                    users?.map((userList) => (
+                      <SelectItem
+                        key={userList?.email}
+                        value={userList?.id!.toString()}
+                      >
+                        {userList?.username}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
               <FormMessage />
