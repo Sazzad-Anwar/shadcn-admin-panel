@@ -83,15 +83,34 @@ export const authOptions: NextAuthOptions = {
       }
       if (account) {
         token.accessToken = user.token
+        token.access_token = account.access_token
+        token.id_token = account.id_token
+        token.provider = account.provider
       }
-      console.log(token)
       return token
     },
     async session({ session, token, user }) {
-      console.log(token)
-      session.user.id = +token?.sub!
-      session.user.token = token.accessToken as string
-      return session
+      if (token?.provider) {
+        try {
+          let res = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/google/callback?id_token=${token?.id_token}&access_token=${token?.access_token}`
+          )
+          let data = await res.json()
+          session.user.token = data?.jwt
+          session.user.email = data?.user?.email
+          session.user.id = data?.user?.id
+          session.user.name = data?.user?.username
+          cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
+          return session
+        } catch (error: any) {
+          console.log(error)
+          throw new Error(error?.message)
+        }
+      } else {
+        session.user.id = +token?.sub!
+        session.user.token = token.accessToken as string
+        return session
+      }
     },
   },
   pages: {
