@@ -69,14 +69,13 @@ export const authOptions: NextAuthOptions = {
         user.id = data?.user?.id
         user.name = data?.user?.username
         cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
-        return true
       }
       return true
     },
     async session({ session, token, user }) {
       session.user.id = +token?.sub!
       session.user.token = token.accessToken as string
-      console.log(session, token, user)
+      console.log(token)
       return session
     },
     async jwt({ token, user, account, profile }) {
