@@ -60,22 +60,26 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ account, user }) {
       if (account?.provider === "google") {
-        let res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/google/callback?id_token=${account?.id_token}&access_token=${account?.access_token}`
-        )
-        let data = await res.json()
-        user.token = data?.jwt
-        user.email = data?.user?.email
-        user.id = data?.user?.id
-        user.name = data?.user?.username
-        cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
+        try {
+          let res = await fetch(
+            `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/google/callback?id_token=${account?.id_token}&access_token=${account?.access_token}`
+          )
+          let data = await res.json()
+          user.token = data?.jwt
+          user.email = data?.user?.email
+          user.id = data?.user?.id
+          user.name = data?.user?.username
+          cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
+        } catch (error: any) {
+          console.log(error)
+          throw new Error(error?.message)
+        }
       }
       return true
     },
     async session({ session, token, user }) {
       session.user.id = +token?.sub!
       session.user.token = token.accessToken as string
-      console.log({ token })
       return session
     },
     async jwt({ token, user, account, profile }) {
