@@ -1,14 +1,24 @@
 "use client"
 
-import React, { Suspense } from "react"
-import { redirect, usePathname } from "next/navigation"
+import React, { Suspense, useEffect, useRef, useState } from "react"
+import { redirect, usePathname, useRouter } from "next/navigation"
 import { useGlobalContext } from "@/context/GlobalContextProvider"
-import { useSession } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import NextProgress from "next-progress"
 
+import { APIRoutes, AppRoutes } from "@/config/routes"
 import useMobileWidth from "@/hooks/useMobileWidth"
 import Loading from "@/app/loading"
 
+import { Button } from "../ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog"
 import NavPanel from "./nav-panel"
 import { SiteHeader } from "./site-header"
 
@@ -21,8 +31,38 @@ export default function Layout({ children }: LayoutProps) {
   const session = useSession()
   const { sideBar } = useGlobalContext()
   const [isMobileWidth] = useMobileWidth()
+  const [isExpired, setIsExpired] = useState<boolean>(false)
+  const pathName = usePathname()
+  const router = useRouter()
+  const dialogRef = useRef<null | HTMLButtonElement>(null)
 
-  console.log(session)
+  useEffect(() => {
+    let checkAuth = async () => {
+      try {
+        let res = await fetch(
+          process.env.NEXT_PUBLIC_BASE_API_URL + APIRoutes.USERS + "/me",
+          {
+            headers: {
+              Authorization: `Bearer ${session?.data?.user?.token}`,
+            },
+          }
+        )
+        if (!res?.ok && pathName !== AppRoutes.LOGIN) {
+          dialogRef?.current?.click()
+          setIsExpired(true)
+        } else {
+          return null
+        }
+      } catch (error: any) {}
+    }
+    if (session.status === "authenticated") {
+      checkAuth()
+    }
+  }, [session, pathName])
+
+  let currentRoute =
+    typeof window !== "undefined" &&
+    window.location.href.split(window.location.origin)[1]
 
   if (
     pathname === "/login" ||
@@ -42,11 +82,10 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   if (session.status === "unauthenticated") {
-    redirect("/login")
+    redirect(AppRoutes.LOGIN)
   }
 
   if (session.status === "authenticated") {
-    localStorage.setItem("token", session.data?.user?.token)
     return (
       <>
         <NextProgress color="#9BD0F5" />
@@ -64,6 +103,26 @@ export default function Layout({ children }: LayoutProps) {
             <SiteHeader />
             <main className="m-5 md:mx-10">
               <Suspense fallback={<Loading />}>{children}</Suspense>
+              <Dialog open={isExpired}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Your session is expired!</DialogTitle>
+                    <DialogDescription>
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          signOut({
+                            callbackUrl:
+                              AppRoutes.LOGIN + "?forwardTo=" + currentRoute,
+                          })
+                        }
+                      >
+                        Login
+                      </Button>
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             </main>
           </div>
         </div>

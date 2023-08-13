@@ -3,6 +3,7 @@
 // Error components must be Client Components
 import { useEffect } from "react"
 import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import { errorImage } from "@/assets/images/image"
 
 import { Button } from "@/components/ui/button"
@@ -10,14 +11,20 @@ import { Button } from "@/components/ui/button"
 export default function Error({
   error,
   reset,
+  params,
+  searchParams,
 }: {
   error: Error
   reset: () => void
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error)
-  }, [error])
+  let searchError = useSearchParams()
+  console.log(searchError.getAll("error"))
+  // useEffect(() => {
+  //   // Log the error to an error reporting service
+  //   console.error(error)
+  // }, [error])
 
   return (
     <div className="flex h-auto w-full items-center justify-center md:h-auto">

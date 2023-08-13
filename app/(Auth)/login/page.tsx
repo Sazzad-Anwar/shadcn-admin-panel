@@ -65,9 +65,14 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   let error = searchParams.get("error")
 
+  console.log(searchParams.get("forwardTo"))
+
   const onSubmit = (data: FormInput) => {
     setIsLoading(true)
-    signIn("credentials", { ...data, callbackUrl: "/" })
+    signIn("credentials", {
+      ...data,
+      callbackUrl: searchParams.get("forwardTo") ?? "/",
+    })
   }
 
   if (session.status === "authenticated") {
@@ -116,7 +121,11 @@ export default function Login() {
                     Github
                   </Button>
                   <Button
-                    onClick={() => signIn("google")}
+                    onClick={() =>
+                      signIn("google", {
+                        callbackUrl: searchParams.get("forwardTo") ?? "/",
+                      })
+                    }
                     type="button"
                     variant="outline"
                   >

@@ -12,6 +12,7 @@ import { Pagination, PostType, UserType } from "@/types/app"
 
 import DataTablePagination from "../DataTable/DataTablePagination/page"
 import { DataTable } from "../DataTable/page"
+import ErrorBoundary from "../ErrorBoundary/page"
 import PostTableColumn from "./PostTableColumn"
 import PostTableToolbar from "./TableToolbar/PostTableToolbar"
 
@@ -34,10 +35,10 @@ export default function PostTable({
     getSortedRowModel: getSortedRowModel(),
   })
   return (
-    <>
+    <ErrorBoundary>
       <PostTableToolbar table={table} users={users} />
       <DataTable table={table} columns={postTableColumns} />
       <DataTablePagination table={table} pagination={pagination} />
-    </>
+    </ErrorBoundary>
   )
 }

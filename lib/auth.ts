@@ -93,7 +93,7 @@ export const authOptions: NextAuthOptions = {
       if (token?.provider) {
         try {
           let res = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/google/callback?id_token=${token?.id_token}&access_token=${token?.access_token}`
+            `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/${token?.provider}/callback?id_token=${token?.id_token}&access_token=${token?.access_token}`
           )
           let data = await res.json()
           session.user.token = data?.jwt

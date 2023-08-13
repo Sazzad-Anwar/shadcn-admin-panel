@@ -21,3 +21,9 @@ export enum APIRoutes {
   POST = "/api/posts",
   USERS = "/api/users",
 }
+
+export enum AppRoutes {
+  LOGIN = "/login",
+  POST = "/posts",
+  DASHBOARD = "/",
+}

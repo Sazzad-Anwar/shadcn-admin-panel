@@ -1,7 +1,9 @@
 import React, { Suspense } from "react"
 import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 import { QueryProps, postQuery } from "@/filters/posts/filter"
 import { IError } from "@/utils/showApiError"
+import { signOut } from "next-auth/react"
 
 import { CreatePostType } from "@/types/app"
 import { APIRoutes } from "@/config/routes"
@@ -17,17 +19,17 @@ async function getPosts(searchParams: QueryProps) {
       APIRoutes.POST +
       `?${postQuery(searchParams!)}`,
     {
-      cache: "no-store",
+      cache: "no-cache",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
   )
+  let posts = await res.json()
   if (!res.ok) {
     // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data")
+    throw new Error(res.statusText)
   }
-  let posts = await res.json()
   posts = {
     ...posts,
     data: posts.data?.map((post: any) => ({

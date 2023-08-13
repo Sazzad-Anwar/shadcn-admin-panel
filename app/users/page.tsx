@@ -19,6 +19,7 @@ export async function getUsers(searchParams?: GetUserProps) {
       searchParams?.search!
     )}`,
     {
+      cache: "no-cache",
       headers: {
         Authorization: `Bearer ${token}`,
       },
