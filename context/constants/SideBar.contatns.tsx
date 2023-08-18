@@ -1,1 +1,0 @@
-export const SIDE_BAR_TOGGLE = 'SIDE_BAR_TOGGLE';

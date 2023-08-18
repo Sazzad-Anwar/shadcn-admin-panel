@@ -1,11 +1,13 @@
-import "animate.css"
+/* eslint-disable @next/next/no-head-element */
 import "@/styles/globals.css"
 import { Metadata } from "next"
+import Head from "next/head"
 
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import Providers from "@/components/Layout/providers"
+import Providers from "@/components/providers"
+import { TailwindIndicator } from "@/components/tailwind-indicator"
 
 export const metadata: Metadata = {
   title: {
@@ -18,11 +20,10 @@ export const metadata: Metadata = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
-  manifest: "/manifest.json",
 }
 
 interface RootLayoutProps {
@@ -31,18 +32,23 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <>
-      <html lang="en" suppressHydrationWarning>
-        <head />
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <Providers>{children}</Providers>
-        </body>
-      </html>
-    </>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Infinite Style Furniture</title>
+      </head>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <Providers>
+          <div className="relative flex min-h-screen flex-col">
+            <div className="flex-1">{children}</div>
+          </div>
+          <TailwindIndicator />
+        </Providers>
+      </body>
+    </html>
   )
 }

@@ -4,7 +4,8 @@
 import { useEffect } from "react"
 import Image from "next/image"
 import { useSearchParams } from "next/navigation"
-import { errorImage } from "@/assets/images/image"
+
+// import { errorImage } from "@/assets/images/image"
 
 import { Button } from "@/components/ui/button"
 
@@ -29,17 +30,17 @@ export default function Error({
   return (
     <div className="flex h-auto w-full items-center justify-center md:h-auto">
       <div className="text-center">
-        <Image
+        {/* <Image
           src={errorImage}
           height={600}
           width={300}
           alt="error-img"
           className="mx-auto"
-        />
+        /> */}
         <h2 className="mt-4 text-2xl font-medium">Something went wrong!</h2>
         <p className="mb-4 font-semibold text-red-500">{error.message}</p>
         <Button
-          variant="outline"
+          variant="default"
           size="sm"
           className="mt-2"
           onClick={

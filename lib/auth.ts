@@ -1,13 +1,15 @@
 import { cookies } from "next/headers"
+import { faker } from "@faker-js/faker"
 import axios from "axios"
 import { NextAuthOptions } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 
-import { IUser, IUserDetails } from "@/types/app"
-import { APIRoutes } from "@/config/routes"
-
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+    maxAge: Number(process.env.NEXT_PUBLIC_SESSION_EXPIRATION),
+  },
   providers: [
     Credentials({
       name: "Credentials",
@@ -25,17 +27,26 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          const { data: userDetails } = await axios.post<IUserDetails>(
-            process.env.NEXT_PUBLIC_BASE_API_URL + APIRoutes.LOGIN,
-            credentials
-          )
+          //   const { data: userDetails } = await axios.post<IUserDetails>(
+          //     process.env.NEXT_PUBLIC_BASE_API_URL + APIRoutes.LOGIN,
+          //     credentials
+          //   )
+          let userDetails = {
+            jwt: faker.string.uuid(),
+            user: {
+              id: faker.string.alphanumeric(),
+              name: faker.person.fullName(),
+              email: faker.internet.email(),
+              image: faker.internet.avatar(),
+            },
+          }
           if (userDetails?.jwt) {
             let user: any = {
               id: userDetails?.user?.id,
               token: userDetails?.jwt,
-              name: userDetails?.user?.username,
+              name: userDetails?.user?.name,
               email: userDetails?.user?.email,
-              image: "https://github.com/sazzad-anwar.png?size=200",
+              image: userDetails?.user?.image,
             }
             return user
           } else {
@@ -58,26 +69,13 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   cookies: {},
   callbacks: {
-    async signIn({ user, account }) {
+    async signIn({ account }) {
       if (account?.provider === "google") {
-        // try {
-        //   let res = await fetch(
-        //     `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/google/callback?id_token=${account?.id_token}&access_token=${account?.access_token}`
-        //   )
-        //   let data = await res.json()
-        //   user.token = data?.jwt
-        //   user.email = data?.user?.email
-        //   user.id = data?.user?.id
-        //   user.name = data?.user?.username
-        //   cookies().set("token", data?.jwt, { maxAge: 60 * 60 * 24 * 30 })
-        // } catch (error: any) {
-        //   console.log(error)
-        //   throw new Error(error?.message)
-        // }
+        // return true
       }
       return true
     },
-    async jwt({ token, user, account, profile }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
       }
@@ -90,7 +88,7 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     async session({ session, token, user }) {
-      if (token?.provider) {
+      if (token?.provider !== "credentials") {
         try {
           let res = await fetch(
             `${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/${token?.provider}/callback?id_token=${token?.id_token}&access_token=${token?.access_token}`
@@ -101,7 +99,7 @@ export const authOptions: NextAuthOptions = {
           session.user.id = data?.user?.id
           session.user.name = data?.user?.username
           cookies().set("token", data?.jwt, {
-            maxAge: 60 * 60 * 24 * 30,
+            maxAge: Number(process.env.NEXT_PUBLIC_SESSION_EXPIRATION),
             sameSite: "lax",
             path: "/",
             httpOnly: true,
