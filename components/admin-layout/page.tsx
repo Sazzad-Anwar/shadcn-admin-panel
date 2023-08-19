@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { redirect, usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 
 import { AppRoutes } from "@/config/routes"
@@ -9,7 +9,6 @@ import useMobileWidth from "@/hooks/useMobileWidth"
 import Loading from "@/app/loading"
 
 import { AdminSiteHeader } from "../admin-site-header"
-import Login from "../login/page"
 import SideNav from "../sideNav/page"
 import { Button } from "../ui/button"
 import {
@@ -24,7 +23,7 @@ export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
-}) {
+}): JSX.Element {
   let session = useSession()
   let pathName = usePathname()
   let router = useRouter()
@@ -39,7 +38,7 @@ export default function AdminLayout({
     return <Loading />
   }
   if (pathName === AppRoutes.LOGIN) {
-    return children
+    return <>{children}</>
   }
   if (session.status === "authenticated") {
     return (
@@ -93,4 +92,5 @@ export default function AdminLayout({
       </Dialog>
     )
   }
+  return <></>
 }

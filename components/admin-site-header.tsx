@@ -27,7 +27,7 @@ export function AdminSiteHeader({
 }: {
   toggleSideBar: () => void
   isSidebarOpen: boolean
-}) {
+}): JSX.Element {
   let session = useSession()
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">

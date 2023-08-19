@@ -12,7 +12,9 @@ interface RenderNavigationProps {
   menu: SideNav
 }
 
-export default function RenderNavigation({ menu }: RenderNavigationProps) {
+export default function RenderNavigation({
+  menu,
+}: RenderNavigationProps): JSX.Element {
   let pathName = usePathname()
   let [isExpanded, setIsExpanded] = useState<boolean>(false)
 

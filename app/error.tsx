@@ -19,13 +19,9 @@ export default function Error({
   reset: () => void
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
-}) {
+}): JSX.Element {
   let searchError = useSearchParams()
   console.log(searchError.getAll("error"))
-  // useEffect(() => {
-  //   // Log the error to an error reporting service
-  //   console.error(error)
-  // }, [error])
 
   return (
     <div className="flex h-auto w-full items-center justify-center md:h-auto">

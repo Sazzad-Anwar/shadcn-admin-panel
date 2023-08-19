@@ -8,7 +8,7 @@ import { AppRoutes } from "@/config/routes"
 
 import { Button } from "../ui/button"
 
-export default function Login() {
+export default function Login(): JSX.Element {
   let session = useSession()
   const login = () => {
     signIn("credentials", {

@@ -2,11 +2,10 @@ import React from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 
-import { cn } from "@/lib/utils"
 import useMobileWidth from "@/hooks/useMobileWidth"
 
 import { Icons } from "../icons"
-import { Button, buttonVariants } from "../ui/button"
+import { Button } from "../ui/button"
 import { SideNav, SideNavigation } from "./navigations"
 import RenderNavigation from "./render-navigation"
 
@@ -16,7 +15,7 @@ export default function SideNav({
 }: {
   isSidebarOpen: boolean
   toggleSideBar: () => void
-}) {
+}):JSX.Element {
   let [isMobileWidth] = useMobileWidth()
 
   return (
