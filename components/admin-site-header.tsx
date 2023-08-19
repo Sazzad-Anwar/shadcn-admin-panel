@@ -1,10 +1,7 @@
-import Link from "next/link"
-import { LogOut, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 
-import { siteConfig } from "@/config/site"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { MainNav } from "@/components/main-nav"
+import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
@@ -35,7 +32,12 @@ export function AdminSiteHeader({
     <header className="sticky top-0 z-40 w-full border-b bg-background">
       <div className="mx-10 flex h-16 w-auto items-center space-x-4 sm:justify-between sm:space-x-0">
         {!isSidebarOpen && (
-          <Button variant="ghost" size="icon" onClick={() => toggleSideBar()}>
+          <Button
+            variant="ghost"
+            className="h-6 w-6"
+            size="icon"
+            onClick={() => toggleSideBar()}
+          >
             <Menu size={20} />
           </Button>
         )}

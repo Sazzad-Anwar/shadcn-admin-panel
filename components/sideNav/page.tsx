@@ -36,6 +36,7 @@ export default function SideNav({
         <Button
           variant="ghost"
           size="icon"
+          className="h-6 w-6"
           onClick={() => toggleSideBar()}
         >
           {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
