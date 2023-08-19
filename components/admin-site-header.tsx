@@ -1,6 +1,7 @@
 import { Menu } from "lucide-react"
 import { signOut, useSession } from "next-auth/react"
 
+import { AppRoutes } from "@/config/routes"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -105,7 +106,9 @@ export function AdminSiteHeader({
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuItem disabled>API</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: AppRoutes.LOGIN })}
+                >
                   Log out
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>

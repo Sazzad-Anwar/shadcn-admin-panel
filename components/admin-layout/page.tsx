@@ -1,8 +1,10 @@
 "use client"
 
 import React, { useState } from "react"
+import { redirect, usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 
+import { AppRoutes } from "@/config/routes"
 import useMobileWidth from "@/hooks/useMobileWidth"
 import Loading from "@/app/loading"
 
@@ -24,9 +26,10 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   let session = useSession()
+  let pathName = usePathname()
+  let router = useRouter()
   let [isMobileWidth] = useMobileWidth()
   let [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true)
-  let [isShowingLogin, setIsShowingLogin] = useState<boolean>(false)
 
   const toggleSideBar = () => {
     setIsSidebarOpen(!isSidebarOpen)
@@ -34,6 +37,9 @@ export default function AdminLayout({
 
   if (session.status === "loading") {
     return <Loading />
+  }
+  if (pathName === AppRoutes.LOGIN) {
+    return children
   }
   if (session.status === "authenticated") {
     return (
@@ -64,30 +70,27 @@ export default function AdminLayout({
         </section>
       </main>
     )
-  } else {
+  }
+  if (session.status === "unauthenticated" && pathName !== AppRoutes.LOGIN) {
     return (
-      <>
-        {isShowingLogin && <Login />}
-
-        <Dialog open={!isShowingLogin}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                Your session is expired! <br /> Please login again
-              </DialogTitle>
-              <DialogDescription>
-                <Button
-                  variant="secondary"
-                  className="mt-4"
-                  onClick={() => setIsShowingLogin(true)}
-                >
-                  Ok
-                </Button>
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </>
+      <Dialog open={true}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Your session is expired! <br /> Please login again
+            </DialogTitle>
+            <DialogDescription>
+              <Button
+                variant="secondary"
+                className="mt-4"
+                onClick={() => router.push(AppRoutes.LOGIN)}
+              >
+                Ok
+              </Button>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     )
   }
 }
