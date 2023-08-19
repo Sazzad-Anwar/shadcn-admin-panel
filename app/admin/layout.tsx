@@ -1,13 +1,11 @@
 /* eslint-disable @next/next/no-head-element */
 "use client"
 
-import React, { useState } from "react"
-import Head from "next/head"
-import Link from "next/link"
-import { Menu, X } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
+import React, { useEffect, useState } from "react"
+import { Metadata } from "next"
+import { useSession } from "next-auth/react"
 
-import { AppRoutes } from "@/config/routes"
+import { siteConfig } from "@/config/site"
 import useMobileWidth from "@/hooks/useMobileWidth"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,11 +16,27 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { AdminSiteHeader } from "@/components/admin-site-header"
-import { Icons } from "@/components/icons"
 import Login from "@/components/login/page"
 import SideNav from "@/components/sideNav/page"
 
 import Loading from "../loading"
+
+export const metadata: Metadata = {
+  title: {
+    default: "Admin Panel",
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: "Amdin panel",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+}
 
 export default function RootLayout({
   children,
@@ -43,51 +57,39 @@ export default function RootLayout({
   }
   if (session.status === "authenticated") {
     return (
-      <>
-        <head>
-          <title>Admin Panel</title>
-        </head>
-        <main className="flex items-start">
-          {isSidebarOpen ? (
-            <SideNav
-              toggleSideBar={toggleSideBar}
-              isSidebarOpen={isSidebarOpen}
-            />
-          ) : null}
-          <section
-            className={`relative ${
-              isSidebarOpen && !isMobileWidth
-                ? " ml-auto md:w-[calc(100%-250px)] lg:w-[calc(100%-300px)]"
-                : isSidebarOpen && isMobileWidth
-                ? "w-0"
-                : "w-full"
-            } ml-auto h-screen overflow-hidden transition-all duration-150 ease-in-out`}
-          >
-            <AdminSiteHeader
-              isSidebarOpen={isSidebarOpen}
-              toggleSideBar={toggleSideBar}
-            />
-            <div className="ml-10 h-full w-auto overflow-y-auto">
-              {children}
-              <div className="h-16" />
-            </div>
-          </section>
-        </main>
-      </>
+      <main className="flex items-start">
+        {isSidebarOpen ? (
+          <SideNav
+            toggleSideBar={toggleSideBar}
+            isSidebarOpen={isSidebarOpen}
+          />
+        ) : null}
+        <section
+          className={`relative ${
+            isSidebarOpen && !isMobileWidth
+              ? " ml-auto md:w-[calc(100%-250px)] lg:w-[calc(100%-300px)]"
+              : isSidebarOpen && isMobileWidth
+              ? "w-0"
+              : "w-full"
+          } ml-auto h-screen overflow-hidden transition-all duration-150 ease-in-out`}
+        >
+          <AdminSiteHeader
+            isSidebarOpen={isSidebarOpen}
+            toggleSideBar={toggleSideBar}
+          />
+          <div className="ml-10 h-full w-auto overflow-y-auto">
+            {children}
+            <div className="h-16" />
+          </div>
+        </section>
+      </main>
     )
   } else {
     return (
       <>
-        {isShowingLogin && (
-          <>
-            <head>
-              <title>Login</title>
-            </head>
-            <Login />
-          </>
-        )}
+        {isShowingLogin && <Login />}
 
-        <Dialog open={session.status === "unauthenticated" && !isShowingLogin}>
+        <Dialog open={!isShowingLogin}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
