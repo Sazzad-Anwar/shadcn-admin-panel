@@ -75,14 +75,17 @@ export default function AdminLayout({
       <Dialog open={true}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              Your session is expired! <br /> Please login again
+            <DialogTitle className="text-lg">
+              Your session is expired! Please login again
             </DialogTitle>
             <DialogDescription>
               <Button
                 variant="secondary"
-                className="mt-4"
-                onClick={() => router.push(AppRoutes.LOGIN)}
+                className="mt-4 h-7 w-7"
+                size="icon"
+                onClick={() =>
+                  router.push(AppRoutes.LOGIN + `?redirectTo=${pathName}`)
+                }
               >
                 Ok
               </Button>

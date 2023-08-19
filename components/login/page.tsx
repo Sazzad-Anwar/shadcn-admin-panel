@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { redirect } from "next/navigation"
+import { redirect, useSearchParams } from "next/navigation"
 import { signIn, useSession } from "next-auth/react"
 
 import { AppRoutes } from "@/config/routes"
@@ -10,9 +10,11 @@ import { Button } from "../ui/button"
 
 export default function Login(): JSX.Element {
   let session = useSession()
+  let params = useSearchParams()
+  let redirectParam = params.get("redirectTo")
   const login = () => {
     signIn("credentials", {
-      callbackUrl: AppRoutes.ADMIN,
+      callbackUrl: redirectParam ?? AppRoutes.ADMIN,
       identifier: "sazzadzihan@gmail.com",
       password: "123456",
     })
