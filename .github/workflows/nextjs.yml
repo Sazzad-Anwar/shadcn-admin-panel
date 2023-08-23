@@ -53,6 +53,9 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
+      - name: Install PNPM
+        if: steps.detect-package-manager.outputs.manager == 'pnpm'
+        run: npm install -g pnpm
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
