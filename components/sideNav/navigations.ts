@@ -1,7 +1,7 @@
 import { KanbanSquare, LayoutDashboard, LucideIcon } from "lucide-react"
 import { v4 as uuid } from "uuid"
 
-import { AppRoutes } from "@/config/routes"
+import { BlogAppRoutes } from "@/config/routes"
 
 export interface SideNav {
   id: string
@@ -16,7 +16,7 @@ export const SideNavigation: SideNav[] = [
   {
     id: uuid(),
     routeName: "Dashboard",
-    route: AppRoutes.ADMIN,
+    route: BlogAppRoutes.ADMIN,
     hasChildren: false,
     icon: LayoutDashboard,
   },
@@ -29,7 +29,7 @@ export const SideNavigation: SideNav[] = [
       {
         id: uuid(),
         routeName: "All Products",
-        route: "/admin/all-products",
+        route: BlogAppRoutes.BLOG_ALL_PRODUCTS,
         hasChildren: false,
       },
       {
